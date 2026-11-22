@@ -1,0 +1,21 @@
+# TikTok 本地化流水线的 Host 半边：任务队列、/api/tiktok-localizer/* 路由、tiktok_localizer 工具
+- insert:
+    - id: tiktok-localizer
+      name: '@local/tiktok-localizer'
+      config:
+        outputRoot: ''
+        concurrency: 2
+        asrModel: small
+        ocrLangs: ja-JP,ko-KR,en-US
+        fps: 4
+        maxCharsPerLine: 26
+        provider: ''
+        model: ''
+        proxy: ''
+        downloaders: ytdlp,tikwm,hellotik
+        ytdlpPath: ''
+        cdp: ''
+        python: ''
+        ffmpegPath: ''
+        ocrPath: ''
+        retainWork: false

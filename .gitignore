@@ -1,0 +1,11 @@
+# macOS
+.DS_Store
+
+# 语音识别运行库（已停用，不入库；完整版请走网盘/本地拷贝）
+runtime/models/
+runtime/pylib/
+
+# 中间产物与打包文件
+_test/
+*.zip
+node_modules/

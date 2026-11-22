@@ -1,0 +1,7 @@
+{
+  "meta": {
+    "title": "TikTok localizer",
+    "description": "Batch TikTok links into localized deliverables: OCR and speech recognition, promo and price erasure, single-line Chinese subtitles burned in, vertical-aware title and body, a JPG cover, one “序号 已完成” folder per video, and a summary Excel with source text beside the translation.",
+    "detail": "docs/DETAIL.md"
+  }
+}
