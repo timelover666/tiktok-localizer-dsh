@@ -21,9 +21,6 @@ const RUNTIME = path.join(HERE, 'runtime')
 const FFMPEG = path.join(RUNTIME, 'bin', 'ffmpeg')
 const OCR = path.join(RUNTIME, 'bin', 'ocrmix')
 const FONT = path.join(RUNTIME, 'fonts', 'NotoSansSC-Bold.ttf')
-const HELLOTIK = path.join(os.homedir(), '.dsh', 'skills', 'hellotik-tiktok-downloader', 'scripts', 'hellotik.py')
-const HELLOTIK_PY = path.join(os.homedir(), 'Downloads', '.venv', 'bin', 'python')
-const HELLOTIK_CDP = 'http://127.0.0.1:9222'
 
 const DEFAULTS = {
   outputRoot: '',
@@ -35,8 +32,7 @@ const DEFAULTS = {
   provider: '',
   model: '',
   proxy: '',
-  downloaders: 'ytdlp,tikwm,hellotik',
-  cdp: '',
+  downloaders: 'ytdlp,tikwm',
   python: '',
   ytdlpPath: '',
   ffmpegPath: '',
@@ -185,15 +181,6 @@ class Localizer {
     return ''
   }
 
-  async cdpAlive() {
-    try {
-      const out = await this.curl([(this.config.cdp || HELLOTIK_CDP) + '/json/version'], undefined, 4)
-      return /Browser/.test(out)
-    } catch {
-      return false
-    }
-  }
-
   runProcess(command, args, { signal, cwd, env, onLine } = {}) {
     return new Promise((resolve, reject) => {
       const child = spawn(command, args, { signal, cwd, env: env ? { ...process.env, ...env } : process.env })
@@ -234,9 +221,8 @@ class Localizer {
       font: existsSync(FONT),
       asr: existsSync(path.join(RUNTIME, 'pylib', 'faster_whisper')),
       download: {
-        hellotik: existsSync(HELLOTIK) && existsSync(HELLOTIK_PY),
-        cdp: await this.cdpAlive(),
         ytdlp: Boolean(await this.findYtdlp()),
+        tikwm: true,
       },
       llm: {
         provider: this.config.provider || selection.provider,
@@ -1320,8 +1306,10 @@ class Localizer {
       return { path: p, name: path.basename(p), link: '' }
     }
 
-    const chain = String(this.config.downloaders || 'hellotik,ytdlp,tikwm')
-      .split(',').map((v) => v.trim()).filter(Boolean)
+    const chain = String(this.config.downloaders || 'ytdlp,tikwm')
+      .split(',').map((v) => v.trim())
+      .filter((v) => v === 'ytdlp' || v === 'tikwm')
+    if (chain.length === 0) chain.push('ytdlp', 'tikwm')
     const failures = []
     for (const name of chain) {
       if (signal && signal.aborted) throw new Error('已停止')
@@ -1341,59 +1329,9 @@ class Localizer {
   }
 
   downloadWith(name, job, item, work, signal) {
-    if (name === 'hellotik') return this.downloadHellotik(job, item, work, signal)
     if (name === 'ytdlp') return this.downloadYtdlp(job, item, work, signal)
     if (name === 'tikwm') return this.downloadTikwm(job, item, work, signal)
     return Promise.reject(new Error(`未知下载器 ${name}`))
-  }
-
-  async lastManifestFile(manifest, url) {
-    try {
-      const text = await readFile(manifest, 'utf8')
-      const rows = text.split('\n').filter(Boolean).map((line) => {
-        try { return JSON.parse(line) } catch { return null }
-      }).filter(Boolean)
-      for (let i = rows.length - 1; i >= 0; i -= 1) {
-        if (rows[i].url === url && rows[i].filePath && existsSync(rows[i].filePath)) return rows[i].filePath
-      }
-      for (let i = rows.length - 1; i >= 0; i -= 1) {
-        if (rows[i].filePath && existsSync(rows[i].filePath)) return rows[i].filePath
-      }
-    } catch {}
-    return ''
-  }
-
-  async downloadHellotik(job, item, work, signal) {
-    if (!existsSync(HELLOTIK) || !existsSync(HELLOTIK_PY)) throw new Error('未安装 hellotik skill 或工作区 venv 缺少 python')
-    if (!(await this.cdpAlive())) {
-      throw new Error('专用 Chrome 未启动：先运行 launch_chrome.command，并在窗口里看完广告解锁解析点数')
-    }
-    const wd = path.join(work, 'hellotik')
-    const out = path.join(wd, 'out')
-    await mkdir(out, { recursive: true })
-    item.message = 'hellotik：提交链接'
-    const queued = await this.runProcess(HELLOTIK_PY, [HELLOTIK, 'queue', item.input, '--workdir', wd], { signal })
-    if (queued.code !== 0) throw new Error(`提交失败：${(queued.stderr || queued.stdout).trim().slice(-300)}`)
-    item.message = 'hellotik：解析并下载'
-    const ran = await this.runProcess(HELLOTIK_PY,
-      [HELLOTIK, 'run', '--limit', '1', '--cdp', this.config.cdp || HELLOTIK_CDP, '--out', out, '--workdir', wd],
-      {
-        signal,
-        onLine: (line) => {
-          const text = line.trim()
-          if (!text) return
-          if (/直链下载成功|经站点代理下载成功/.test(text)) item.message = 'hellotik：下载完成'
-          else if (/风控|RATE_LIMITED|TICKET_IP_RESTRICTED|点数|限制/.test(text)) item.message = `hellotik：${text.slice(0, 90)}`
-        },
-      })
-    const file = await this.lastManifestFile(path.join(wd, 'manifest.jsonl'), item.input)
-    if (!file) {
-      const tail = (ran.stdout || ran.stderr || '').trim().split('\n').slice(-4).join(' ')
-      throw new Error(tail.slice(-260) || 'hellotik 没有产出文件')
-    }
-    const dest = path.join(work, 'source.mp4')
-    await copyFile(file, dest)
-    return { path: dest, name: path.basename(file) }
   }
 
   async downloadYtdlp(job, item, work, signal) {

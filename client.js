@@ -18,7 +18,7 @@ window.__ModuleLoader__.load({
         linksLabel: 'TikTok 链接',
         linksHint: '每行一个链接，也可以粘贴分享文本；本地视频路径同样支持',
         linksPlaceholder: 'https://www.tiktok.com/@user/video/1234567890\nhttps://vm.tiktok.com/xxxxxxx/',
-        downloadHint: '链接依次尝试 yt-dlp → tikwm → hellotik；自动带上本机 7890 代理；hellotik 需先在专用 Chrome 看广告解锁点数',
+        downloadHint: '链接依次尝试 yt-dlp → tikwm；自动带上本机 7890 代理（有就跑）',
         rootLabel: '输出目录',
         rootPlaceholder: '留空使用 /Volumes/Data/媒老板/海外视频本地化',
         concurrency: '并发',
@@ -84,7 +84,7 @@ window.__ModuleLoader__.load({
         linksLabel: 'TikTok links',
         linksHint: 'One link per line; share text or local video paths also work',
         linksPlaceholder: 'https://www.tiktok.com/@user/video/1234567890\nhttps://vm.tiktok.com/xxxxxxx/',
-        downloadHint: 'Links try yt-dlp, then tikwm, then hellotik, with the local proxy on port 7890 when present',
+        downloadHint: 'Links try yt-dlp, then tikwm, using the local proxy on port 7890 when present',
         rootLabel: 'Output folder',
         rootPlaceholder: 'Empty means /Volumes/Data/媒老板/海外视频本地化',
         concurrency: 'Parallel',
@@ -417,7 +417,7 @@ window.__ModuleLoader__.load({
         if (!caps.python) missing.push('python3')
         if (!caps.llm || !caps.llm.model) missing.push(t('noModel'))
         if (!caps.asr) missing.push('ASR')
-        if (caps.download && !caps.download.hellotik && !caps.download.ytdlp) missing.push('下载组件')
+        if (caps.download && !caps.download.ytdlp) missing.push('下载组件')
       }
 
       return h('div', { className: 'tlz-page' },

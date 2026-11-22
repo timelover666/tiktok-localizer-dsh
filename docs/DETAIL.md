@@ -5,7 +5,7 @@
 ## 每条视频做什么
 
 0. **无字幕的片子**：画面 OCR 找不到足够字幕（覆盖 <15% 或不足 3 条）时，该条会在面板标「⚠ 无画面字幕」，不会用口播硬生成字幕。
-1. **取片**：按 `yt-dlp → tikwm → hellotik` 依次尝试下载无水印 mp4（每条失败原因都会记录）；也接受本地文件或包含视频的目录。若本机 7890 端口有代理（如 FlClash），自动带上，无需额外配置。
+1. **取片**：按 `yt-dlp → tikwm` 依次尝试下载无水印 mp4（每条失败原因都会记录）；也接受本地文件或包含视频的目录。若本机 7890 端口有代理（如 FlClash），自动带上，无需额外配置。
 2. **画面 OCR**：每 0.25 秒抽帧，用 macOS Vision 识别画面外文（默认日语／韩语／英语），按文本相似度聚成带时间轴的事件。
 3. **人声 ASR（可选）**：默认关闭（`asrMode: ocr`）。改成 `auto` 才会用 faster-whisper 转写口播，且与 OCR 文本一致时以 OCR 原文为准；画面字幕覆盖不足时口播字幕会被主动省略。
 4. **翻译**：调用当前默认对话模型，一次返回画面文字译文、口播短句译文、垂类、标题、正文、封面时间与引流标记。
@@ -26,7 +26,7 @@
 ## 运行环境
 
 - 随包自带 `runtime/bin` 下的 ffmpeg 与 OCR 二进制、Noto Sans SC 字体、`runtime/pylib` 的 faster-whisper 运行库与 `tiny` 模型。
-- 链接下载优先用 `yt-dlp`：会查 PATH、`~/Downloads/.venv/bin/yt-dlp`、Homebrew 路径，也可用 `ytdlpPath` 指定；缺 yt-dlp 时降级 tikwm，再降级 hellotik（需要专用 Chrome 与解析点数）。
+- 链接下载优先用 `yt-dlp`：会查 PATH、`~/Downloads/.venv/bin/yt-dlp`、Homebrew 路径，也可用 `ytdlpPath` 指定；缺 yt-dlp 时降级 tikwm。
 - 代理：`proxy` 留空时自动探测 `127.0.0.1:7890`（FlClash 等 Clash 系默认端口）。
 - 需要 `python3`（系统自带即可）。
 - TikTok 解析接口在部分网络环境不可达；失败会以单条错误呈现，不影响同批其它视频。可在插件配置里给 `proxy` 填 HTTP 代理。
@@ -43,9 +43,8 @@
 | `maxCharsPerLine` | `26` | 单条字幕字数上限 |
 | `provider` / `model` | 空 | 翻译用模型；留空跟随当前默认模型 |
 | `proxy` | 空 | 下载代理。留空自动探测 `127.0.0.1:7890` |
-| `downloaders` | `ytdlp,tikwm,hellotik` | 下载顺序，逗号分隔 |
+| `downloaders` | `ytdlp,tikwm` | 下载顺序，逗号分隔（仅支持 ytdlp / tikwm） |
 | `ytdlpPath` | 空 | 指定 yt-dlp 可执行文件 |
-| `cdp` | 空 | hellotik 专用 Chrome 的 CDP 地址，默认 `http://127.0.0.1:9222` |
 | `python` / `ffmpegPath` / `ocrPath` | 空 | 覆盖自带可执行文件 |
 | `retainWork` | `false` | 保留中间产物（帧、音频、识别结果） |
 

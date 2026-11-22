@@ -12,9 +12,8 @@
         provider: ''
         model: ''
         proxy: ''
-        downloaders: ytdlp,tikwm,hellotik
+        downloaders: ytdlp,tikwm
         ytdlpPath: ''
-        cdp: ''
         python: ''
         ffmpegPath: ''
         ocrPath: ''

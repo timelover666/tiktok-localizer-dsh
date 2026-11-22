@@ -24,7 +24,7 @@
 
 ```
 本地路径 → 直接用
-链接    → yt-dlp（浏览器指纹模拟）→ tikwm（1.3s 限速、3 次重试）→ hellotik（CDP 9222 + 点数）
+链接    → yt-dlp（浏览器指纹模拟）→ tikwm（1.3s 限速、3 次重试）
 ```
 
 - 代理：`proxy` 留空时每次下载前探测 `127.0.0.1:7890`（FlClash）；无代理会明确提示。
@@ -147,8 +147,8 @@
 | provider / model | 空 | 翻译模型；留空跟随当前默认 |
 | modelTimeoutMs | 180000 | 单次模型调用超时 |
 | proxy | 空 | 留空自动探测 7890 |
-| downloaders | ytdlp,tikwm,hellotik | 下载顺序 |
-| ytdlpPath / cdp | 空 | yt-dlp 路径 / hellotik CDP |
+| downloaders | ytdlp,tikwm | 下载顺序 |
+| ytdlpPath | 空 | yt-dlp 路径 |
 | retainWork | false | 保留中间帧（默认只删 frames） |
 
 ## 11.5 投放合规（按 2026-11 会议纪要）

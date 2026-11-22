@@ -31,13 +31,13 @@ dsh --version
 **A. 仓库直装（仓库公开时最省事）**
 
 ```sh
-dsh plugin --profile desktop add "git+https://github.com/<OWNER>/tiktok-localizer-dsh.git"
+dsh plugin --profile desktop add "git+https://github.com/timelover666/tiktok-localizer-dsh.git"
 ```
 
 **B. 克隆到本地再装（推荐，以后更新只 pull）**
 
 ```sh
-git clone https://github.com/<OWNER>/tiktok-localizer-dsh.git ~/DSH-plugins/tiktok-localizer
+git clone https://github.com/timelover666/tiktok-localizer-dsh.git ~/DSH-plugins/tiktok-localizer
 dsh plugin --profile desktop add ~/DSH-plugins/tiktok-localizer
 ```
 
@@ -81,5 +81,5 @@ dsh plugin --profile desktop remove @local/tiktok-localizer
 - 需要系统自带的 macOS Vision 文字识别能力。
 - 精简版不含语音识别运行库（`runtime/pylib`、`runtime/models`），当前流水线只用画面 OCR，不影响使用。
 - 面板「新建对话」按钮写死了原作者工作区 `/Volumes/Data/媒老板`；没有该磁盘时该按钮会报错，不影响「粘贴链接 → 开始处理」。
-- hellotik 下载兜底需要额外安装同名 skill，通常用不到（yt-dlp / tikwm 已足够）。
+- 下载链只保留 yt-dlp → tikwm（hellotik 已移除，不再需要专用 Chrome 与解析点数）。
 - 第三方组件：`runtime/bin/ffmpeg`、`runtime/fonts/NotoSansSC-Bold.ttf`（SIL OFL）。仓库保持私有或仅限个人分发时无需额外处理；若公开分发，请保留各自许可证。
